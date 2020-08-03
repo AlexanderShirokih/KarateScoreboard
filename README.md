@@ -1,5 +1,5 @@
 # KarateScoreboard
-Crossplatform simple scoreboard application for karate, that can display scoreboard to external monitor.
+Crossplatform simple scoreboard application for karate, that can display scoreboard to an external monitor.
 ## Requirements
 PC with Java 8+ installed
 
