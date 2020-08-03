@@ -1,0 +1,13 @@
+settings.title=Настройки
+settings.use_m_type=Использовать третью строку предупреждений (M)
+settings.red_on_left=Красный слева
+settings.keybindings_description=<html>Управление клавиатурой:<br/> \
+<ul>\
+<li>+1 point  <strong>NUM7/NUM9</strong></li>\
+<li>+2 points <strong>NUM4/NUM6</strong></li>\
+<li>+3 points <strong>NUM1/NUM3</strong></li>\
+<li>+1 A-пред. <strong>Q/E</strong></li>\
+<li>+1 D-пред. <strong>A/D</strong></li>\
+<li>+1 M-пред. <strong>Z/C</strong></li>\
+<li>Сброс <strong>R</strong></li>\
+</ul></html>
