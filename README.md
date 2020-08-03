@@ -3,7 +3,7 @@ Crossplatform simple scoreboard application for karate, that can display scorebo
 ## Requirements
 PC with Java 8+ installed
 
-##Screenshots
+## Screenshots
 Main controlling window:
 ![Main window screenshot](https://github.com/AlexanderShirokih/KarateScoreboard/blob/master/screenshots/base_frame.png)
 
