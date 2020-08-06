@@ -1,7 +1,6 @@
 package ru.aleshi.scoreboards.view
 
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.subjects.PublishSubject
+import kotlinx.coroutines.channels.Channel
 import ru.aleshi.scoreboards.core.Resources
 import ru.aleshi.scoreboards.data.SettingsItem
 import java.awt.Point
@@ -13,18 +12,18 @@ import javax.swing.*
  */
 class SettingsDialog(frame: ScoreboardFrame) : JDialog(frame) {
 
-    private val mTypeCheckedChannel = PublishSubject.create<Pair<SettingsItem, Boolean>>()
+    private val mTypeCheckedChannel = Channel<Pair<SettingsItem, Boolean>>()
 
     /**
-     * An [Observable] for emitting changes in setting items.
+     * A [Channel] for emitting changes in setting items.
      */
-    fun getSettingsValue(): Observable<Pair<SettingsItem, Boolean>> = mTypeCheckedChannel
+    fun getSettingsValue(): Channel<Pair<SettingsItem, Boolean>> = mTypeCheckedChannel
 
     private val cbUseMType = JCheckBox(Resources.getString("settings.use_m_type"))
         .apply {
             addItemListener { itemEvent: ItemEvent ->
                 val isSelected = itemEvent.stateChange == ItemEvent.SELECTED
-                mTypeCheckedChannel.onNext(SettingsItem.UseThirdWarningLine to isSelected)
+                mTypeCheckedChannel.offer(SettingsItem.UseThirdWarningLine to isSelected)
             }
         }
 
@@ -32,7 +31,7 @@ class SettingsDialog(frame: ScoreboardFrame) : JDialog(frame) {
         .apply {
             addItemListener { itemEvent: ItemEvent ->
                 val isSelected = itemEvent.stateChange == ItemEvent.SELECTED
-                mTypeCheckedChannel.onNext(SettingsItem.RedOnLeft to isSelected)
+                mTypeCheckedChannel.offer(SettingsItem.RedOnLeft to isSelected)
             }
         }
 

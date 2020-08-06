@@ -1,27 +1,34 @@
 package ru.aleshi.scoreboards
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import ru.aleshi.scoreboards.core.Resources
 import ru.aleshi.scoreboards.core.ScoreboardController
 import ru.aleshi.scoreboards.data.ScreenInfo
 import ru.aleshi.scoreboards.view.ScoreboardFrame
 import ru.aleshi.scoreboards.viewmodel.ScoreboardFrameViewModel
 import java.awt.GraphicsEnvironment
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
 import javax.swing.UIManager
 
 /**
  * Application entry point
  */
-fun main() {
+@ExperimentalCoroutinesApi
+fun main() = runBlocking {
     setLookAndFeel()
 
-    Resources.loadFromResources("/i18n/ru-RU.prop")
-        .subscribeOn(SwingScheduler)
-        .observeOn(SwingScheduler)
-        .subscribe {
-            setupUI()
-        }
+    withContext(Dispatchers.IO) {
+        Resources.loadFromResources("/i18n/ru-RU.prop")
+    }
+
+    setupUI()
 }
 
+@ExperimentalCoroutinesApi
 private fun setupUI() {
     val environment = GraphicsEnvironment.getLocalGraphicsEnvironment()
     val default = environment.defaultScreenDevice
@@ -40,12 +47,18 @@ private fun setupUI() {
 
     val frame = ScoreboardFrame(true).apply {
         setViewModel(scoreboardViewModel)
+        addWindowStateListener(object : WindowAdapter() {
+            override fun windowClosing(event: WindowEvent?) = clearSubscriptions()
+        })
     }
 
     val mainFrame = ScoreboardFrame(false).apply {
         title = "Karate Scoreboard"
         setSize(1050, 700)
         setViewModel(scoreboardViewModel)
+        addWindowStateListener(object : WindowAdapter() {
+            override fun windowClosing(event: WindowEvent?) = clearSubscriptions()
+        })
     }
 
     val scoreboardScreen =
@@ -53,6 +66,7 @@ private fun setupUI() {
     frame.location = scoreboardScreen.location
     frame.isVisible = true
     mainFrame.isVisible = true
+
 }
 
 private fun setLookAndFeel() {

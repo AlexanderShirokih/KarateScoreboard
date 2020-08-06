@@ -1,7 +1,6 @@
 package ru.aleshi.scoreboards.view
 
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.subjects.PublishSubject
+import kotlinx.coroutines.channels.Channel
 import java.awt.*
 import javax.swing.*
 import kotlin.math.roundToInt
@@ -27,12 +26,12 @@ class WarningCategoryView(
         )
     }
 
-    private val categoryChannel = PublishSubject.create<Int>()
+    private val categoryChannel = Channel<Int>()
 
     /**
-     * Returns an [Observable] that emit changes of warning points when control buttons pressed.
+     * Returns a [Channel] that emit changes of warning points when control buttons pressed.
      */
-    fun getCategoryChannel(): Observable<Int> = categoryChannel
+    fun getCategoryChannel(): Channel<Int> = categoryChannel
 
     private val subButton = JButton("-").apply {
         isFocusable = false

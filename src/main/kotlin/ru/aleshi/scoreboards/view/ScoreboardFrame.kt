@@ -1,9 +1,7 @@
 package ru.aleshi.scoreboards.view
 
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.kotlin.plusAssign
-import ru.aleshi.scoreboards.SwingScheduler
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 import ru.aleshi.scoreboards.data.*
 import ru.aleshi.scoreboards.data.ScoreboardState.DataState
 import ru.aleshi.scoreboards.viewmodel.ScoreboardFrameViewModel
@@ -19,7 +17,7 @@ class ScoreboardFrame(
     isFullscreen: Boolean
 ) : JFrame() {
 
-    private val disposable = CompositeDisposable()
+    private val scope = MainScope()
 
     private val leftPanel = JPanel()
     private val rightPanel = JPanel()
@@ -57,7 +55,6 @@ class ScoreboardFrame(
 
     private val timeLabel = TimeLabel()
     private val settingsPanel = SettingsPanel()
-
     private val settingsDialog = SettingsDialog(this)
 
     init {
@@ -143,64 +140,73 @@ class ScoreboardFrame(
     /**
      * Attaches the [viewModel] to this view and subscribes to view-model events.
      */
+    @ExperimentalCoroutinesApi
     fun setViewModel(viewModel: ScoreboardFrameViewModel) {
-        clearSubscriptions()
 
-        disposable += viewModel.getState()
-            .observeOn(SwingScheduler)
-            .subscribe {
-                when (it) {
-                    ScoreboardState.SplashState -> updateData(
-                        DataState(
-                            BattleInfo(),
-                            isGroupMVisible = false
-                        )
-                    )
-                    is DataState -> updateData(it)
+        scope.apply {
+            launch(Dispatchers.Main) {
+                launch {
+                    viewModel.getState().collect {
+                        when (it) {
+                            ScoreboardState.SplashState -> updateData(
+                                DataState(
+                                    BattleInfo(),
+                                    isGroupMVisible = false
+                                )
+                            )
+                            is DataState -> updateData(it)
+                        }
+                    }
+                }
+
+                launch {
+                    for (score in leftScoreLabel.getPressedButtons()) {
+                        viewModel.onAddScore(Team.LEFT, score)
+                    }
+                }
+
+                launch {
+                    for (score in rightScoreLabel.getPressedButtons()) {
+                        viewModel.onAddScore(Team.RIGHT, score)
+                    }
+                }
+
+                launch {
+                    for ((cat, point) in leftPointsGroup.getWarningsChannel(this)) {
+                        viewModel.onAddWarning(Team.LEFT, cat, point)
+                    }
+                }
+
+                launch {
+                    for ((cat, point) in rightPointsGroup.getWarningsChannel(this)) {
+                        viewModel.onAddWarning(Team.RIGHT, cat, point)
+                    }
+                }
+
+                launch {
+                    for (time in timeLabel.getTimeChannel()) {
+                        viewModel.onAddTime(time)
+                    }
+                }
+
+                launch {
+                    for (action in settingsPanel.getButtonsChannel()) {
+                        when (action) {
+                            UserAction.Reset -> viewModel.onReset()
+                            UserAction.Pause -> viewModel.onSetPaused(true)
+                            UserAction.Unpause -> viewModel.onSetPaused(false)
+                            UserAction.OpenSettings -> settingsDialog.isVisible = true
+                        }
+                    }
+                }
+
+                launch {
+                    for ((item, isChecked) in settingsDialog.getSettingsValue()) {
+                        viewModel.onSetSettingsItem(item, isChecked)
+                    }
                 }
             }
-
-        disposable += leftScoreLabel.getPressedButtons()
-            .subscribeOn(SwingScheduler)
-            .flatMapCompletable { score -> viewModel.onAddScore(Team.LEFT, score) }
-            .subscribe()
-
-        disposable += rightScoreLabel.getPressedButtons()
-            .subscribeOn(SwingScheduler)
-            .flatMapCompletable { score -> viewModel.onAddScore(Team.RIGHT, score) }
-            .subscribe()
-
-        disposable += leftPointsGroup.getWarningsChannel()
-            .subscribeOn(SwingScheduler)
-            .flatMapCompletable { (cat, point) -> viewModel.onAddWarning(Team.LEFT, cat, point) }
-            .subscribe()
-
-        disposable += rightPointsGroup.getWarningsChannel()
-            .subscribeOn(SwingScheduler)
-            .flatMapCompletable { (cat, point) -> viewModel.onAddWarning(Team.RIGHT, cat, point) }
-            .subscribe()
-
-        disposable += timeLabel.getTimeChannel()
-            .subscribeOn(SwingScheduler)
-            .flatMapCompletable(viewModel::onAddTime)
-            .subscribe()
-
-        disposable += settingsPanel.getButtonsChannel()
-            .subscribeOn(SwingScheduler)
-            .flatMapCompletable { action: UserAction ->
-                when (action) {
-                    UserAction.Reset -> viewModel.onReset()
-                    UserAction.Pause -> viewModel.onSetPaused(true)
-                    UserAction.Unpause -> viewModel.onSetPaused(false)
-                    UserAction.OpenSettings -> Completable.fromAction { settingsDialog.isVisible = true }
-                }
-            }
-            .subscribe()
-
-        disposable += settingsDialog.getSettingsValue()
-            .subscribeOn(SwingScheduler)
-            .flatMapCompletable { (item, isChecked) -> viewModel.onSetSettingsItem(item, isChecked) }
-            .subscribe()
+        }
     }
 
     private fun updateData(data: DataState) {
@@ -264,7 +270,7 @@ class ScoreboardFrame(
      * Detaches subscriptions of view-model events.
      */
     fun clearSubscriptions() {
-        disposable.clear()
+        scope.cancel()
     }
 
 }

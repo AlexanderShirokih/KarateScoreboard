@@ -1,7 +1,6 @@
 package ru.aleshi.scoreboards.view
 
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.subjects.PublishSubject
+import kotlinx.coroutines.channels.Channel
 import java.awt.Color
 import java.awt.Font
 import javax.swing.*
@@ -21,12 +20,12 @@ class ScoreLabel(
         private val labelFont = Font("Serif", Font.PLAIN, 200)
     }
 
-    private val pressedButtons = PublishSubject.create<Int>()
+    private val pressedButtons = Channel<Int>()
 
     /**
-     * Returns [Observable] that emits events when pressed button for adding or subtraction points.
+     * Returns a [Channel] that emits events when pressed button for adding or subtraction points.
      */
-    fun getPressedButtons(): Observable<Int> = pressedButtons
+    fun getPressedButtons(): Channel<Int> = pressedButtons
 
     private val subScoreGroup = JPanel().apply {
         layout = BoxLayout(this, BoxLayout.Y_AXIS)

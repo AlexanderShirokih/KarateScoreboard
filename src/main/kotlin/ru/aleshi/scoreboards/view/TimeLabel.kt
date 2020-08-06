@@ -1,7 +1,6 @@
 package ru.aleshi.scoreboards.view
 
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.subjects.PublishSubject
+import kotlinx.coroutines.channels.Channel
 import ru.aleshi.scoreboards.data.BattleTime
 import java.awt.*
 import javax.swing.*
@@ -20,12 +19,12 @@ class TimeLabel : JPanel() {
             ).deriveFont(160f)
     }
 
-    private val timeChannel = PublishSubject.create<Int>()
+    private val timeChannel = Channel<Int>()
 
     /**
-     * Returns an [Observable] that emits seconds when user hits control button for adding or subtracting time.
+     * Returns a [Channel] that emits seconds when user hits control button for adding or subtracting time.
      */
-    fun getTimeChannel(): Observable<Int> = timeChannel
+    fun getTimeChannel(): Channel<Int> = timeChannel
 
     private val subGroup = JPanel().apply {
         isOpaque = false

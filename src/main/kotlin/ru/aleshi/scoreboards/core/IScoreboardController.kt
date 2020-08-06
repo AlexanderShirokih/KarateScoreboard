@@ -1,6 +1,6 @@
 package ru.aleshi.scoreboards.core
 
-import io.reactivex.rxjava3.core.Observable
+import kotlinx.coroutines.flow.Flow
 import ru.aleshi.scoreboards.data.ScoreboardState
 import ru.aleshi.scoreboards.data.Team
 import ru.aleshi.scoreboards.data.WarningCategory
@@ -11,9 +11,9 @@ import ru.aleshi.scoreboards.data.WarningCategory
 interface IScoreboardController {
 
     /**
-     * Returns [Observable] that emits [ScoreboardState]s
+     * Returns [Flow] that emits [ScoreboardState]s
      */
-    fun getState(): Observable<ScoreboardState>
+    fun getState(): Flow<ScoreboardState>
 
     /**
      * Adds warning for team [team] on category [category] with amount [amount]

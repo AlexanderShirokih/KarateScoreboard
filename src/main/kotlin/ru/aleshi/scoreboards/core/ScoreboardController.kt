@@ -1,8 +1,9 @@
 package ru.aleshi.scoreboards.core
 
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.subjects.BehaviorSubject
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import ru.aleshi.scoreboards.data.BattleInfo
 import ru.aleshi.scoreboards.data.ScoreboardState
 import ru.aleshi.scoreboards.data.Team
@@ -13,17 +14,20 @@ import java.util.concurrent.TimeUnit
  * Default [IScoreboardController] implementation.
  * Contains main business-logic.
  */
+
+@ExperimentalCoroutinesApi
 class ScoreboardController : IScoreboardController {
 
-    private var timerDisposable: Disposable? = null
+    private var timerJob: Job? = null
+    private val scope = CoroutineScope(Dispatchers.Default)
     private val battleInfo = BattleInfo()
     private var redOnLeft = true
     private var stopTime: Long = 0L
 
     /**
-     * `true` if M-type warning visible
+     * `true` if M-type warning is visible
      */
-    var isGroupMVisible = false
+    private var isGroupMVisible = false
 
     /**
      * Standard battle time in seconds when timer resets
@@ -31,9 +35,8 @@ class ScoreboardController : IScoreboardController {
     var battleTime: Long = 120L
 
     private var currentState: ScoreboardState = ScoreboardState.SplashState
-    private val state = BehaviorSubject.create<ScoreboardState>().apply {
-        onNext(currentState)
-    }
+
+    private val state = ConflatedBroadcastChannel<ScoreboardState>()
 
     init {
         reset()
@@ -66,24 +69,27 @@ class ScoreboardController : IScoreboardController {
     }
 
     override fun setPaused(paused: Boolean) {
-        if ((timerDisposable == null || timerDisposable!!.isDisposed) == paused)
+        if ((timerJob == null || !timerJob!!.isActive) == paused)
             return
 
         if (paused) {
-            timerDisposable?.dispose()
+            timerJob?.cancel()
             return
         }
 
-        stopTime = System.currentTimeMillis()
-        timerDisposable = Observable
-            .interval(100, TimeUnit.MILLISECONDS)
-            .subscribe {
+        timerJob = scope.launch {
+            stopTime = System.currentTimeMillis()
+
+            while (isActive) {
+                delay(100)
+
                 val current = System.currentTimeMillis()
                 val delta = current - stopTime
                 stopTime = current
                 battleInfo.getTime().decrease(delta)
                 updateData()
             }
+        }
     }
 
     override fun setRedOnLeft(isRedOnLeft: Boolean) {
@@ -96,7 +102,8 @@ class ScoreboardController : IScoreboardController {
         updateData()
     }
 
-    override fun getState(): Observable<ScoreboardState> = state
+    @FlowPreview
+    override fun getState(): Flow<ScoreboardState> = state.asFlow()
 
     private fun updateData() {
         currentState = ScoreboardState.DataState(
@@ -104,7 +111,7 @@ class ScoreboardController : IScoreboardController {
             isRedOnLeft = redOnLeft,
             isGroupMVisible = isGroupMVisible
         )
-        state.onNext(currentState)
+        state.offer(currentState)
     }
 
 }

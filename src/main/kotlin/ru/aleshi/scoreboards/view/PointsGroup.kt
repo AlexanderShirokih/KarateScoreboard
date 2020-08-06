@@ -1,6 +1,9 @@
 package ru.aleshi.scoreboards.view
 
-import io.reactivex.rxjava3.core.Observable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.launch
 import ru.aleshi.scoreboards.data.WarningCategory
 import javax.swing.BoxLayout
 import javax.swing.JPanel
@@ -24,14 +27,27 @@ class PointsGroup(keys: Array<KeyStroke>) : JPanel() {
     }
 
     /**
-     * Returns [Observable] which emits items when control buttons(+1, -1) were pressed on certain warning category
+     * Returns [kotlinx.coroutines.channels.ReceiveChannel] which emits items when control buttons(+1, -1) were pressed on certain warning category
      */
-    fun getWarningsChannel(): Observable<Pair<WarningCategory, Int>> =
-        Observable.merge(
-            groupA.getCategoryChannel().map { WarningCategory.TypeA to it },
-            groupD.getCategoryChannel().map { WarningCategory.TypeD to it },
-            groupM.getCategoryChannel().map { WarningCategory.TypeM to it }
-        )
+    @ExperimentalCoroutinesApi
+    suspend fun getWarningsChannel(scope: CoroutineScope) = scope.produce {
+        launch {
+            for (a in groupA.getCategoryChannel()) {
+                this@produce.send(WarningCategory.TypeA to a)
+            }
+        }
+        launch {
+            for (d in groupD.getCategoryChannel()) {
+                this@produce.send(WarningCategory.TypeD to d)
+            }
+        }
+
+        launch {
+            for (m in groupM.getCategoryChannel()) {
+                this@produce.send(WarningCategory.TypeM to m)
+            }
+        }
+    }
 
     /**
      * Sets the current amount of A-type warnings
