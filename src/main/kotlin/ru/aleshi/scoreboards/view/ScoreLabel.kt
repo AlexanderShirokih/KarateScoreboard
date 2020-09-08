@@ -10,7 +10,8 @@ import javax.swing.*
  * @param keys keys for binding to [+1, +2, +3] actions.
  */
 class ScoreLabel(
-    keys: Array<KeyStroke>
+    keys: Array<KeyStroke>,
+    bigSize: Boolean = false
 ) : JPanel() {
 
     companion object {
@@ -18,6 +19,7 @@ class ScoreLabel(
         private const val KEY_ADD_TWO = "add_two"
         private const val KEY_ADD_THREE = "add_three"
         private val labelFont = Font("Serif", Font.PLAIN, 200)
+        private val bigLabelFont = Font("Serif", Font.PLAIN, 320)
     }
 
     private val pressedButtons = Channel<Int>()
@@ -73,7 +75,7 @@ class ScoreLabel(
 
     private val scoreLabel = JLabel("0").apply {
         foreground = Color.white
-        font = labelFont
+        font = if(bigSize) bigLabelFont else labelFont
     }
 
     init {

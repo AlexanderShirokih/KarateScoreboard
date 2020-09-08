@@ -9,7 +9,7 @@ import javax.swing.border.EmptyBorder
 /**
  * Time table showing battle time.
  */
-class TimeLabel : JPanel() {
+class TimeLabel(bigSize: Boolean) : JPanel() {
 
     companion object {
         private val timerFont =
@@ -17,6 +17,7 @@ class TimeLabel : JPanel() {
                 Font.TRUETYPE_FONT,
                 ScoreboardFrame::class.java.getResourceAsStream("/font/DigitalFont-Regular.otf")
             ).deriveFont(160f)
+        private val bigTimerFont = timerFont.deriveFont(240f)
     }
 
     private val timeChannel = Channel<Int>()
@@ -68,11 +69,11 @@ class TimeLabel : JPanel() {
 
     private val timeLabel = JLabel("0:00").apply {
         foreground = Color.white
-        font = timerFont
+        font = if (bigSize) bigTimerFont else timerFont
         isOpaque = true
         background = Color.black
         border = EmptyBorder(20, 0, 0, 0)
-        preferredSize = Dimension(340, 150)
+        preferredSize = if (bigSize) Dimension(500, 200) else Dimension(340, 150)
         horizontalAlignment = SwingConstants.CENTER
         verticalAlignment = SwingConstants.CENTER
     }

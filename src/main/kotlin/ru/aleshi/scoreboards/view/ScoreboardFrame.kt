@@ -27,7 +27,7 @@ class ScoreboardFrame(
             KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD7, 0),
             KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD4, 0),
             KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD1, 0)
-        )
+        ), bigSize = isFullscreen
     )
 
     private val rightScoreLabel = ScoreLabel(
@@ -35,7 +35,7 @@ class ScoreboardFrame(
             KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD9, 0),
             KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD6, 0),
             KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD3, 0)
-        )
+        ), bigSize = isFullscreen
     )
 
     private val leftPointsGroup = PointsGroup(
@@ -53,7 +53,7 @@ class ScoreboardFrame(
         )
     )
 
-    private val timeLabel = TimeLabel()
+    private val timeLabel = TimeLabel(bigSize = isFullscreen)
     private val settingsPanel = SettingsPanel()
     private val settingsDialog = SettingsDialog(this)
 
