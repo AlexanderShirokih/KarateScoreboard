@@ -22,6 +22,7 @@ class ScoreboardController : IScoreboardController {
     private val scope = CoroutineScope(Dispatchers.Default)
     private val battleInfo = BattleInfo()
     private var redOnLeft = true
+    private var addPointsOnWarnings = false
     private var stopTime: Long = 0L
 
     /**
@@ -47,7 +48,7 @@ class ScoreboardController : IScoreboardController {
         category: WarningCategory,
         amount: Int
     ): Boolean =
-        battleInfo.addWarning(team, category, amount).apply {
+        battleInfo.addWarning(team, category, amount, addPointsOnWarnings).apply {
             updateData()
         }
 
@@ -94,6 +95,11 @@ class ScoreboardController : IScoreboardController {
 
     override fun setRedOnLeft(isRedOnLeft: Boolean) {
         redOnLeft = isRedOnLeft
+        updateData()
+    }
+
+    override fun setAddPointsOnWarnings(addPointsOnWarnings: Boolean) {
+        this.addPointsOnWarnings = addPointsOnWarnings
         updateData()
     }
 

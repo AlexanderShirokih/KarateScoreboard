@@ -5,5 +5,6 @@ package ru.aleshi.scoreboards.data
  */
 enum class SettingsItem {
     UseThirdWarningLine,
-    RedOnLeft
+    RedOnLeft,
+    AddPointsOnWarnings
 }

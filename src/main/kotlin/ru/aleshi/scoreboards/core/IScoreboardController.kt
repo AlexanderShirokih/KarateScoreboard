@@ -51,4 +51,9 @@ interface IScoreboardController {
      */
     fun setMCatVisibility(isVisible: Boolean)
 
+    /**
+     * If `true` than when warnings added opponent will give points
+     */
+    fun setAddPointsOnWarnings(addPointsOnWarnings: Boolean)
+
 }

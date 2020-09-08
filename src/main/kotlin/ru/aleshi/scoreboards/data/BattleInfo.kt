@@ -27,7 +27,8 @@ class BattleInfo {
     fun addWarning(
         team: Team,
         category: WarningCategory,
-        amount: Int
+        amount: Int,
+        addPointsOnWarnings: Boolean
     ): Boolean {
         val player = getPlayer(team)
         val field =
@@ -44,7 +45,8 @@ class BattleInfo {
         val isMaxWarningsReached = current == maxWarnings + 1 || current == -1
 
         if (!isMaxWarningsReached) {
-            addPoints(getOppositeTeam(team), if (amount < 0) -previous else next)
+            if (addPointsOnWarnings)
+                addPoints(getOppositeTeam(team), if (amount < 0) -previous else next)
             field.set(next)
         }
 

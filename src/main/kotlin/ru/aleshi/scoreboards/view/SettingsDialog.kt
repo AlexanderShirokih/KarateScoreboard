@@ -35,6 +35,14 @@ class SettingsDialog(frame: ScoreboardFrame) : JDialog(frame) {
             }
         }
 
+    private val cbAddPointsOnWarnings = JCheckBox(Resources.getString("settings.pts_on_warn"))
+        .apply {
+            addItemListener { itemEvent: ItemEvent ->
+                val isSelected = itemEvent.stateChange == ItemEvent.SELECTED
+                mTypeCheckedChannel.offer(SettingsItem.AddPointsOnWarnings to isSelected)
+            }
+        }
+
     init {
         title = Resources.getString("settings.title")
         add(JPanel().apply {
@@ -43,6 +51,8 @@ class SettingsDialog(frame: ScoreboardFrame) : JDialog(frame) {
             add(cbUseMType)
             add(Box.createVerticalStrut(16))
             add(cbRedOnLeft)
+            add(Box.createVerticalStrut(16))
+            add(cbAddPointsOnWarnings)
             add(Box.createVerticalStrut(16))
             add(JLabel(Resources.getString("settings.keybindings_description")))
         })
