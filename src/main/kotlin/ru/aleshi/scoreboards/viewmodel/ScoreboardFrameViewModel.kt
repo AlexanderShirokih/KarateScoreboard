@@ -61,6 +61,7 @@ class ScoreboardFrameViewModel(
         when (settingsItem) {
             SettingsItem.UseThirdWarningLine -> scoreboardController.setMCatVisibility(isChecked)
             SettingsItem.RedOnLeft -> scoreboardController.setRedOnLeft(isChecked)
+            SettingsItem.MirrorTeams -> scoreboardController.setMirrorTeams(isChecked)
             SettingsItem.AddPointsOnWarnings -> scoreboardController.setAddPointsOnWarnings(isChecked)
         }
     }

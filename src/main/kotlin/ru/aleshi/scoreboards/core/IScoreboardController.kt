@@ -47,6 +47,11 @@ interface IScoreboardController {
     fun setRedOnLeft(isRedOnLeft: Boolean)
 
     /**
+     * If `true` then team location on external and internal frames will be opposite
+     */
+    fun setMirrorTeams(isMirrored: Boolean)
+
+    /**
      * If `true` then third warning time become visible
      */
     fun setMCatVisibility(isVisible: Boolean)

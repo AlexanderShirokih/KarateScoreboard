@@ -22,6 +22,7 @@ class ScoreboardController(eventsController: IEventsController) : IScoreboardCon
     private val scope = CoroutineScope(Dispatchers.Default)
     private val battleInfo = BattleInfo(eventsController)
     private var redOnLeft = true
+    private var mirrored = false
     private var addPointsOnWarnings = false
     private var stopTime: Long = 0L
 
@@ -98,6 +99,11 @@ class ScoreboardController(eventsController: IEventsController) : IScoreboardCon
         updateData()
     }
 
+    override fun setMirrorTeams(isMirrored: Boolean) {
+        mirrored = isMirrored
+        updateData()
+    }
+
     override fun setAddPointsOnWarnings(addPointsOnWarnings: Boolean) {
         this.addPointsOnWarnings = addPointsOnWarnings
         updateData()
@@ -115,6 +121,7 @@ class ScoreboardController(eventsController: IEventsController) : IScoreboardCon
         currentState = ScoreboardState.DataState(
             battleInfo = battleInfo,
             isRedOnLeft = redOnLeft,
+            isMirrored = mirrored,
             isGroupMVisible = isGroupMVisible
         )
         state.offer(currentState)

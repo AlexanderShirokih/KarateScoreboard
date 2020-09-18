@@ -43,6 +43,14 @@ class SettingsDialog(frame: ScoreboardFrame) : JDialog(frame) {
             }
         }
 
+    private val cbMirrorTeams = JCheckBox(Resources.getString("settings.mirror_teams"))
+        .apply {
+            addItemListener { itemEvent: ItemEvent ->
+                val isSelected = itemEvent.stateChange == ItemEvent.SELECTED
+                mTypeCheckedChannel.offer(SettingsItem.MirrorTeams to isSelected)
+            }
+        }
+
     init {
         title = Resources.getString("settings.title")
         add(JPanel().apply {
@@ -52,11 +60,13 @@ class SettingsDialog(frame: ScoreboardFrame) : JDialog(frame) {
             add(Box.createVerticalStrut(16))
             add(cbRedOnLeft)
             add(Box.createVerticalStrut(16))
+            add(cbMirrorTeams)
+            add(Box.createVerticalStrut(16))
             add(cbAddPointsOnWarnings)
             add(Box.createVerticalStrut(16))
             add(JLabel(Resources.getString("settings.keybindings_description")))
         })
-        setSize(400, 300)
+        setSize(500, 340)
         location = Point(400, 200)
     }
 }

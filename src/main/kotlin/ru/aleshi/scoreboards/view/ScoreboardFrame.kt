@@ -15,10 +15,13 @@ import javax.swing.SpringLayout.*
  * The main frame that contains all user interface components.
  */
 class ScoreboardFrame(
-    isFullscreen: Boolean
+    private val isFullscreen: Boolean
 ) : JFrame() {
 
     private val scope = MainScope()
+
+    private var isMirrored: Boolean = false
+    private var isRedOnLeft: Boolean = true
 
     private val leftPanel = JPanel()
     private val rightPanel = JPanel()
@@ -53,6 +56,34 @@ class ScoreboardFrame(
             KeyStroke.getKeyStroke(KeyEvent.VK_C, 0)
         )
     )
+
+    private fun flipCondition(): Boolean {
+        val result = !isRedOnLeft
+        if (isMirrored && isFullscreen)
+            return !result
+        return result
+    }
+
+    private fun isLeftTeam(team: Team): Boolean {
+        if (flipCondition())
+            return team == Team.BLUE
+        return team == Team.RED
+    }
+
+    private fun getTeam(isLeft: Boolean): Team {
+        if (flipCondition())
+            return if (isLeft) Team.BLUE else Team.RED
+        return if (isLeft) Team.RED else Team.BLUE
+    }
+
+    private fun getScoreLabel(team: Team): ScoreLabel =
+        if (isLeftTeam(team)) leftScoreLabel else rightScoreLabel
+
+    private fun getPointsGroup(team: Team): PointsGroup =
+        if (isLeftTeam(team)) leftPointsGroup else rightPointsGroup
+
+    private fun getPanel(team: Team): JPanel =
+        if (isLeftTeam(team)) leftPanel else rightPanel
 
     private val timeLabel = TimeLabel(bigSize = isFullscreen)
     private val settingsPanel = SettingsPanel()
@@ -162,25 +193,25 @@ class ScoreboardFrame(
 
                 launch {
                     for (score in leftScoreLabel.getPressedButtons()) {
-                        viewModel.onAddScore(Team.LEFT, score)
+                        viewModel.onAddScore(getTeam(isLeft = true), score)
                     }
                 }
 
                 launch {
                     for (score in rightScoreLabel.getPressedButtons()) {
-                        viewModel.onAddScore(Team.RIGHT, score)
+                        viewModel.onAddScore(getTeam(isLeft = false), score)
                     }
                 }
 
                 launch {
                     for ((cat, point) in leftPointsGroup.getWarningsChannel(this)) {
-                        viewModel.onAddWarning(Team.LEFT, cat, point)
+                        viewModel.onAddWarning(getTeam(isLeft = true), cat, point)
                     }
                 }
 
                 launch {
                     for ((cat, point) in rightPointsGroup.getWarningsChannel(this)) {
-                        viewModel.onAddWarning(Team.RIGHT, cat, point)
+                        viewModel.onAddWarning(getTeam(isLeft = false), cat, point)
                     }
                 }
 
@@ -211,7 +242,7 @@ class ScoreboardFrame(
     }
 
     private fun updateData(data: DataState) {
-        setColors(data.isRedOnLeft)
+        setColors(data.isRedOnLeft, data.isMirrored)
         setGroupMVisibility(data.isGroupMVisible)
         SwingUtilities.updateComponentTreeUI(this)
 
@@ -229,10 +260,7 @@ class ScoreboardFrame(
     }
 
     private fun setScore(team: Team, score: Int) {
-        when (team) {
-            Team.LEFT -> leftScoreLabel.score = score
-            Team.RIGHT -> rightScoreLabel.score = score
-        }
+        getScoreLabel(team).score = score
     }
 
     private fun setGroupPoints(team: Team, category: WarningCategory, points: Int) {
@@ -241,11 +269,7 @@ class ScoreboardFrame(
             WarningCategory.TypeM -> PointsGroup::setGroupMPoints
             WarningCategory.TypeD -> PointsGroup::setGroupDPoints
         }
-
-        when (team) {
-            Team.LEFT -> setter.invoke(leftPointsGroup, points)
-            Team.RIGHT -> setter.invoke(rightPointsGroup, points)
-        }
+        setter.invoke(getPointsGroup(team), points)
     }
 
     private fun setGroupMVisibility(isVisible: Boolean) {
@@ -257,14 +281,12 @@ class ScoreboardFrame(
         timeLabel.setTime(time)
     }
 
-    private fun setColors(leftIsRed: Boolean) {
-        if (leftIsRed) {
-            leftPanel.background = Color.red
-            rightPanel.background = Color.blue
-        } else {
-            leftPanel.background = Color.blue
-            rightPanel.background = Color.red
-        }
+    private fun setColors(leftIsRed: Boolean, isMirrored: Boolean) {
+        this.isMirrored = isMirrored
+        this.isRedOnLeft = leftIsRed
+
+        getPanel(Team.RED).background = Color.red
+        getPanel(Team.BLUE).background = Color.blue
     }
 
     /**

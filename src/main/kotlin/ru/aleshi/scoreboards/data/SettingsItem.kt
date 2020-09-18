@@ -6,5 +6,6 @@ package ru.aleshi.scoreboards.data
 enum class SettingsItem {
     UseThirdWarningLine,
     RedOnLeft,
-    AddPointsOnWarnings
+    AddPointsOnWarnings,
+    MirrorTeams
 }

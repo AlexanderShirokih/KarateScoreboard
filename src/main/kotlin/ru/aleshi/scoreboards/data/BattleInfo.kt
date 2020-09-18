@@ -77,9 +77,12 @@ class BattleInfo(private val eventController: IEventsController) {
      */
     fun addPoints(team: Team, amount: Int) {
         val player = getPlayer(team)
+        val currentValue = player.score
         player.score += amount
         player.score = player.score.coerceAtLeast(0)
-        eventController.addEvent(Event.PointEvent(team, amount))
+
+        if (currentValue != player.score)
+            eventController.addEvent(Event.PointEvent(team, amount))
     }
 
     /**
@@ -101,14 +104,14 @@ class BattleInfo(private val eventController: IEventsController) {
 
     private fun getPlayer(team: Team): PlayerInfo =
         when (team) {
-            Team.LEFT -> leftPlayer
-            Team.RIGHT -> rightPlayer
+            Team.RED -> leftPlayer
+            Team.BLUE -> rightPlayer
         }
 
     private fun getOppositeTeam(team: Team) =
         when (team) {
-            Team.LEFT -> Team.RIGHT
-            Team.RIGHT -> Team.LEFT
+            Team.RED -> Team.BLUE
+            Team.BLUE -> Team.RED
         }
 
 }

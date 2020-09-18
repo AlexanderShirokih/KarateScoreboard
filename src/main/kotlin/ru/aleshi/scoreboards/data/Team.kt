@@ -1,8 +1,10 @@
 package ru.aleshi.scoreboards.data
 
 /**
- * Battle teams. [LEFT] - left-side team, [RIGHT] - right-side team
+ * Battle teams.
+ * [RED] - red team, by default it's a left-side team,
+ * [BLUE] - blue team, by default it's a right-side team
  */
 enum class Team {
-    LEFT, RIGHT
+    RED, BLUE
 }

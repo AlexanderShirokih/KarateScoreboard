@@ -2,6 +2,7 @@ settings.title=Настройки
 settings.use_m_type=Использовать третью строку предупреждений (M)
 settings.red_on_left=Красный слева
 settings.pts_on_warn=Добавлять очки оппоненту за предупреждения
+settings.mirror_teams=Зеркальное отображение команд во внешнем и внутреннем окнах
 settings.keybindings_description=<html>Управление клавиатурой:<br/> \
 <ul>\
 <li>+1 point  <strong>NUM7/NUM9</strong></li>\

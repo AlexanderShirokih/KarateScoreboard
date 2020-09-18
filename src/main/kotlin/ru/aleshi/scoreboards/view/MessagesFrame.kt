@@ -9,18 +9,20 @@ import ru.aleshi.scoreboards.core.IEventsController
 import java.awt.Dimension
 import javax.swing.*
 
+
 class MessagesFrame(private val eventsController: IEventsController) : JFrame() {
 
     private val scope = MainScope()
 
     private val content = JPanel().apply { layout = BoxLayout(this, BoxLayout.Y_AXIS) }
 
+    private val scrollPane = JScrollPane(
+        content, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+    ).apply { alignmentY = -1f }
+
+
     init {
-        add(
-            JScrollPane(
-                content, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
-            ).apply { alignmentY = -1f }
-        )
+        add(scrollPane)
         size = Dimension(250, 480)
 
         scope.launch {
@@ -35,8 +37,14 @@ class MessagesFrame(private val eventsController: IEventsController) : JFrame() 
         messages
             .map { JLabel(it) }
             .forEach { content.add(it) }
+
         this.revalidate()
         this.repaint()
+
+        SwingUtilities.invokeLater {
+            val vertical = scrollPane.verticalScrollBar
+            vertical.value = vertical.maximum
+        }
     }
 
     /**

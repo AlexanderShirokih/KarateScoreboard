@@ -16,6 +16,7 @@ sealed class ScoreboardState {
     data class DataState(
         val battleInfo: BattleInfo,
         val isGroupMVisible: Boolean,
-        val isRedOnLeft: Boolean = true
+        val isRedOnLeft: Boolean = true,
+        val isMirrored: Boolean = false
     ) : ScoreboardState()
 }

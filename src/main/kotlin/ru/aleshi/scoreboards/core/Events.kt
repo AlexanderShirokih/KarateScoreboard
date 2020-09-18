@@ -10,8 +10,8 @@ interface Event {
         @JvmStatic
         fun printTeam(team: Team) =
             when (team) {
-                Team.LEFT -> "<font color='red'>красным</font>"
-                Team.RIGHT -> "<font color='blue'>синим</font>"
+                Team.RED -> "<font color='red'>красным</font>"
+                Team.BLUE -> "<font color='blue'>синим</font>"
             }
 
         @JvmStatic
@@ -31,7 +31,7 @@ interface Event {
             "<html><b>+$amount</b> ${printCategory(category)} ${plural()} ${printTeam(targetTeam)}</html>"
 
         private fun plural(): String =
-            when (amount) {
+            when (amount.absoluteValue) {
                 1 -> "предупреждение"
                 else -> "предупреждения"
             }
@@ -47,10 +47,9 @@ interface Event {
             else '+'
 
         private fun plural(): String =
-            when (amount) {
+            when (amount.absoluteValue) {
                 1 -> "очко"
-                2 -> "очка"
-                else -> "очков"
+                else -> "очка"
             }
     }
 }
