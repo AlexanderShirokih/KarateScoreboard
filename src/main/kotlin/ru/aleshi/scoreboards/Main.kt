@@ -4,9 +4,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import ru.aleshi.scoreboards.core.EventsController
 import ru.aleshi.scoreboards.core.Resources
 import ru.aleshi.scoreboards.core.ScoreboardController
 import ru.aleshi.scoreboards.data.ScreenInfo
+import ru.aleshi.scoreboards.view.MessagesFrame
 import ru.aleshi.scoreboards.view.ScoreboardFrame
 import ru.aleshi.scoreboards.viewmodel.ScoreboardFrameViewModel
 import java.awt.GraphicsEnvironment
@@ -17,6 +19,7 @@ import javax.swing.UIManager
 /**
  * Application entry point
  */
+@ExperimentalStdlibApi
 @ExperimentalCoroutinesApi
 fun main() = runBlocking {
     setLookAndFeel()
@@ -28,6 +31,7 @@ fun main() = runBlocking {
     setupUI()
 }
 
+@ExperimentalStdlibApi
 @ExperimentalCoroutinesApi
 private fun setupUI() {
     val environment = GraphicsEnvironment.getLocalGraphicsEnvironment()
@@ -42,11 +46,12 @@ private fun setupUI() {
     }
     screens.forEach { println(it) }
 
-    val controller = ScoreboardController()
+    val eventsController = EventsController()
+    val controller = ScoreboardController(eventsController)
     val scoreboardViewModel = ScoreboardFrameViewModel(controller)
 
     val frame = ScoreboardFrame(true).apply {
-        setViewModel(scoreboardViewModel)
+        setViewModel(scoreboardViewModel, eventsController)
         addWindowStateListener(object : WindowAdapter() {
             override fun windowClosing(event: WindowEvent?) = clearSubscriptions()
         })
@@ -55,7 +60,13 @@ private fun setupUI() {
     val mainFrame = ScoreboardFrame(false).apply {
         title = "Karate Scoreboard"
         setSize(1050, 700)
-        setViewModel(scoreboardViewModel)
+        setViewModel(scoreboardViewModel, eventsController)
+        addWindowStateListener(object : WindowAdapter() {
+            override fun windowClosing(event: WindowEvent?) = clearSubscriptions()
+        })
+    }
+
+    val messagesFrame = MessagesFrame(eventsController).apply {
         addWindowStateListener(object : WindowAdapter() {
             override fun windowClosing(event: WindowEvent?) = clearSubscriptions()
         })
@@ -66,7 +77,7 @@ private fun setupUI() {
     frame.location = scoreboardScreen.location
     frame.isVisible = true
     mainFrame.isVisible = true
-
+    messagesFrame.isVisible = true
 }
 
 private fun setLookAndFeel() {

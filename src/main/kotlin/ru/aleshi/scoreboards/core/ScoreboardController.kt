@@ -16,11 +16,11 @@ import java.util.concurrent.TimeUnit
  */
 
 @ExperimentalCoroutinesApi
-class ScoreboardController : IScoreboardController {
+class ScoreboardController(eventsController: IEventsController) : IScoreboardController {
 
     private var timerJob: Job? = null
     private val scope = CoroutineScope(Dispatchers.Default)
-    private val battleInfo = BattleInfo()
+    private val battleInfo = BattleInfo(eventsController)
     private var redOnLeft = true
     private var addPointsOnWarnings = false
     private var stopTime: Long = 0L

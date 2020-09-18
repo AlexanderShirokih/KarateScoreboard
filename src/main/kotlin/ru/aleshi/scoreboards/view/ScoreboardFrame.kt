@@ -2,6 +2,7 @@ package ru.aleshi.scoreboards.view
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
+import ru.aleshi.scoreboards.core.IEventsController
 import ru.aleshi.scoreboards.data.*
 import ru.aleshi.scoreboards.data.ScoreboardState.DataState
 import ru.aleshi.scoreboards.viewmodel.ScoreboardFrameViewModel
@@ -141,7 +142,7 @@ class ScoreboardFrame(
      * Attaches the [viewModel] to this view and subscribes to view-model events.
      */
     @ExperimentalCoroutinesApi
-    fun setViewModel(viewModel: ScoreboardFrameViewModel) {
+    fun setViewModel(viewModel: ScoreboardFrameViewModel, eventController: IEventsController) {
 
         scope.apply {
             launch(Dispatchers.Main) {
@@ -150,7 +151,7 @@ class ScoreboardFrame(
                         when (it) {
                             ScoreboardState.SplashState -> updateData(
                                 DataState(
-                                    BattleInfo(),
+                                    BattleInfo(eventController),
                                     isGroupMVisible = false
                                 )
                             )

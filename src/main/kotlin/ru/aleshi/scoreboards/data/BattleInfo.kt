@@ -1,5 +1,7 @@
 package ru.aleshi.scoreboards.data
 
+import ru.aleshi.scoreboards.core.Event
+import ru.aleshi.scoreboards.core.IEventsController
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import kotlin.math.min
@@ -7,7 +9,7 @@ import kotlin.math.min
 /**
  * A class that contains info about battle state.
  */
-class BattleInfo {
+class BattleInfo(private val eventController: IEventsController) {
 
     private val leftPlayer = PlayerInfo()
     private val rightPlayer = PlayerInfo()
@@ -19,6 +21,7 @@ class BattleInfo {
     fun reset() {
         leftPlayer.reset()
         rightPlayer.reset()
+        eventController.reset()
     }
 
     /**
@@ -45,6 +48,8 @@ class BattleInfo {
         val isMaxWarningsReached = current == maxWarnings + 1 || current == -1
 
         if (!isMaxWarningsReached) {
+            eventController.addEvent(Event.WarningEvent(team, category, amount))
+
             if (addPointsOnWarnings)
                 addPoints(getOppositeTeam(team), if (amount < 0) -previous else next)
             field.set(next)
@@ -74,6 +79,7 @@ class BattleInfo {
         val player = getPlayer(team)
         player.score += amount
         player.score = player.score.coerceAtLeast(0)
+        eventController.addEvent(Event.PointEvent(team, amount))
     }
 
     /**
