@@ -7,6 +7,7 @@ import ru.aleshi.scoreboards.data.*
 import ru.aleshi.scoreboards.data.ScoreboardState.DataState
 import ru.aleshi.scoreboards.viewmodel.ScoreboardFrameViewModel
 import java.awt.Color
+import java.awt.Point
 import java.awt.event.KeyEvent
 import javax.swing.*
 import javax.swing.SpringLayout.*
@@ -104,7 +105,8 @@ class ScoreboardFrame(
         if (isFullscreen) {
             extendedState = MAXIMIZED_BOTH
             isUndecorated = true
-        }
+        } else
+            location = Point(280, 0)
 
         val springLayout = SpringLayout()
         layout = springLayout

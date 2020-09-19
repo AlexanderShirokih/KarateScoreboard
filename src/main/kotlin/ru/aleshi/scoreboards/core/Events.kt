@@ -2,11 +2,17 @@ package ru.aleshi.scoreboards.core
 
 import ru.aleshi.scoreboards.data.Team
 import ru.aleshi.scoreboards.data.WarningCategory
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.math.absoluteValue
 
-interface Event {
+abstract class Event {
+
+    private val date = Date()
 
     companion object {
+        private val dateFormat = SimpleDateFormat("hh:mm:ss")
+
         @JvmStatic
         fun printTeam(team: Team) =
             when (team) {
@@ -23,12 +29,14 @@ interface Event {
             }
     }
 
-    fun toFormattedString(): String
+    protected fun printDate(): String = "<i>${dateFormat.format(date)}</i>"
+
+    abstract fun toFormattedString(): String
 
     class WarningEvent(private val targetTeam: Team, private val category: WarningCategory, private val amount: Int) :
-        Event {
+        Event() {
         override fun toFormattedString(): String =
-            "<html><b>+$amount</b> ${printCategory(category)} ${plural()} ${printTeam(targetTeam)}</html>"
+            "<html>${printDate()} <b>+$amount</b> ${printCategory(category)} ${plural()} ${printTeam(targetTeam)}</html>"
 
         private fun plural(): String =
             when (amount.absoluteValue) {
@@ -37,10 +45,10 @@ interface Event {
             }
     }
 
-    class PointEvent(private val targetTeam: Team, private val amount: Int) : Event {
+    class PointEvent(private val targetTeam: Team, private val amount: Int) : Event() {
 
         override fun toFormattedString(): String =
-            "<html><b>${sign()} ${amount.absoluteValue}</b> ${plural()} ${printTeam(targetTeam)}</html>"
+            "<html>${printDate()}: <b>${sign()} ${amount.absoluteValue}</b> ${plural()} ${printTeam(targetTeam)}</html>"
 
         private fun sign(): Char =
             if (amount < 0) '-'

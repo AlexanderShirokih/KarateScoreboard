@@ -23,7 +23,7 @@ class MessagesFrame(private val eventsController: IEventsController) : JFrame() 
 
     init {
         add(scrollPane)
-        size = Dimension(250, 480)
+        size = Dimension(280, 480)
 
         scope.launch {
             eventsController.channel.consumeAsFlow().collect { list ->
