@@ -36,7 +36,7 @@ abstract class Event {
     class WarningEvent(private val targetTeam: Team, private val category: WarningCategory, private val amount: Int) :
         Event() {
         override fun toFormattedString(): String =
-            "<html>${printDate()} <b>+$amount</b> ${printCategory(category)} ${plural()} ${printTeam(targetTeam)}</html>"
+            "<html>${printDate()}: <b>+$amount</b> ${printCategory(category)} ${plural()} ${printTeam(targetTeam)}</html>"
 
         private fun plural(): String =
             when (amount.absoluteValue) {

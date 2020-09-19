@@ -106,7 +106,7 @@ class ScoreboardFrame(
             extendedState = MAXIMIZED_BOTH
             isUndecorated = true
         } else
-            location = Point(280, 0)
+            location = Point(285, 0)
 
         val springLayout = SpringLayout()
         layout = springLayout
