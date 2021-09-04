@@ -1,6 +1,8 @@
 package ru.aleshi.scoreboards.core
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import java.io.InputStreamReader
 import java.util.*
 
@@ -15,8 +17,10 @@ object Resources {
      * Loads property file with strings from resources [path]
      */
     suspend fun loadFromResources(path: String) = coroutineScope {
-        props.clear()
-        props.load(InputStreamReader(javaClass.getResourceAsStream(path), "UTF-8"))
+        withContext(Dispatchers.IO) {
+            props.clear()
+            props.load(InputStreamReader(javaClass.getResourceAsStream(path), "UTF-8"))
+        }
     }
 
     /**

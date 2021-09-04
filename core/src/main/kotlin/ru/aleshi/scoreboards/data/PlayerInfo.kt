@@ -3,26 +3,27 @@ package ru.aleshi.scoreboards.data
 /**
  * Information about player
  */
-class PlayerInfo {
+data class PlayerInfo(
     /**
      * Player score points
      */
-    var score: Int = 0
+    var score: Int = 0,
 
     /**
      * Count of A-type warnings
      */
-    var aWarnings: Int = 0
+    var aWarnings: Int = 0,
 
     /**
      * Count of D-type warnings
      */
-    var dWarnings: Int = 0
+    var dWarnings: Int = 0,
 
     /**
      * Count of M-type warnings
      */
     var mWarnings: Int = 0
+) {
 
     /**
      * Resets all parameters to zero.

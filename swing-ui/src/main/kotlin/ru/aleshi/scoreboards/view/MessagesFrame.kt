@@ -48,7 +48,7 @@ class MessagesFrame(private val eventsController: IEventsController) : JFrame() 
     }
 
     /**
-     * Detaches subscriptions of view-model events.
+     * Detaches subscriptions of ru.aleshi.scoreboards.view-model events.
      */
     fun clearSubscriptions() {
         scope.cancel()

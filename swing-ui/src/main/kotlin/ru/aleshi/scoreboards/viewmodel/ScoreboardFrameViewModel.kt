@@ -8,7 +8,7 @@ import ru.aleshi.scoreboards.data.Team
 import ru.aleshi.scoreboards.data.WarningCategory
 
 /**
- * A view-model bridge connecting scoreboard view and its controller.
+ * A ru.aleshi.scoreboards.view-model bridge connecting scoreboard ru.aleshi.scoreboards.view and its controller.
  */
 class ScoreboardFrameViewModel(
     private val scoreboardController: IScoreboardController

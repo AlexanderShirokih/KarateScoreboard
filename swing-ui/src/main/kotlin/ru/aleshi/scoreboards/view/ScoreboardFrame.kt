@@ -172,7 +172,7 @@ class ScoreboardFrame(
     }
 
     /**
-     * Attaches the [viewModel] to this view and subscribes to view-model events.
+     * Attaches the [viewModel] to this ru.aleshi.scoreboards.view and subscribes to ru.aleshi.scoreboards.view-model events.
      */
     @ExperimentalCoroutinesApi
     fun setViewModel(viewModel: ScoreboardFrameViewModel, eventController: IEventsController) {
@@ -292,7 +292,7 @@ class ScoreboardFrame(
     }
 
     /**
-     * Detaches subscriptions of view-model events.
+     * Detaches subscriptions of ru.aleshi.scoreboards.view-model events.
      */
     fun clearSubscriptions() {
         scope.cancel()

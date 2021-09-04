@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.3.72"
+    kotlin("jvm") version "1.5.21"
     application
 }
 
@@ -11,14 +11,16 @@ repositories {
 }
 
 application {
-    mainClassName = "ru.aleshi.scoreboards.MainKt"
+    mainClassName = "scoreboards.MainKt"
 }
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    
+    implementation(project(":core"))
+    implementation(project(":swing-ui"))
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.3.8")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1-native-mt")
 
     testImplementation("junit", "junit", "4.12")
 }

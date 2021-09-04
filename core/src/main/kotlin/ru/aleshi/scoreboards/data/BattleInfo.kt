@@ -9,7 +9,7 @@ import kotlin.math.min
 /**
  * A class that contains info about battle state.
  */
-class BattleInfo(private val eventController: IEventsController) {
+data class BattleInfo(private val eventController: IEventsController) {
 
     private val leftPlayer = PlayerInfo()
     private val rightPlayer = PlayerInfo()

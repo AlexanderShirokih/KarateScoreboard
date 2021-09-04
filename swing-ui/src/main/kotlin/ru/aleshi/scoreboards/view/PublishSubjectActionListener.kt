@@ -13,7 +13,7 @@ class PublishSubjectActionListener(
     ActionListener {
 
     override fun actionPerformed(event: ActionEvent?) {
-        targetSubject.offer(value)
+        targetSubject.trySend(value)
     }
 
 }

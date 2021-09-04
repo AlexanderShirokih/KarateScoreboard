@@ -23,7 +23,7 @@ class SettingsDialog(frame: ScoreboardFrame) : JDialog(frame) {
         .apply {
             addItemListener { itemEvent: ItemEvent ->
                 val isSelected = itemEvent.stateChange == ItemEvent.SELECTED
-                mTypeCheckedChannel.offer(SettingsItem.UseThirdWarningLine to isSelected)
+                mTypeCheckedChannel.trySend(SettingsItem.UseThirdWarningLine to isSelected)
             }
         }
 
@@ -31,7 +31,7 @@ class SettingsDialog(frame: ScoreboardFrame) : JDialog(frame) {
         .apply {
             addItemListener { itemEvent: ItemEvent ->
                 val isSelected = itemEvent.stateChange == ItemEvent.SELECTED
-                mTypeCheckedChannel.offer(SettingsItem.RedOnLeft to isSelected)
+                mTypeCheckedChannel.trySend(SettingsItem.RedOnLeft to isSelected)
             }
         }
 
@@ -39,7 +39,7 @@ class SettingsDialog(frame: ScoreboardFrame) : JDialog(frame) {
         .apply {
             addItemListener { itemEvent: ItemEvent ->
                 val isSelected = itemEvent.stateChange == ItemEvent.SELECTED
-                mTypeCheckedChannel.offer(SettingsItem.AddPointsOnWarnings to isSelected)
+                mTypeCheckedChannel.trySend(SettingsItem.AddPointsOnWarnings to isSelected)
             }
         }
 
@@ -47,7 +47,7 @@ class SettingsDialog(frame: ScoreboardFrame) : JDialog(frame) {
         .apply {
             addItemListener { itemEvent: ItemEvent ->
                 val isSelected = itemEvent.stateChange == ItemEvent.SELECTED
-                mTypeCheckedChannel.offer(SettingsItem.MirrorTeams to isSelected)
+                mTypeCheckedChannel.trySend(SettingsItem.MirrorTeams to isSelected)
             }
         }
 

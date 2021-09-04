@@ -19,6 +19,6 @@ class EventsController : IEventsController {
     }
 
     private fun notifyDataChanged() {
-        channel.offer(events)
+        channel.trySend(events)
     }
 }
