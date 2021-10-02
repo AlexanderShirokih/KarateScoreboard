@@ -8,7 +8,8 @@ import java.awt.event.ActionListener
  * The listener that emits [value] to [targetSubject] when the action performed.
  */
 class PublishSubjectActionListener(
-    private val targetSubject: SendChannel<Int>, private val value: Int
+    private val targetSubject: SendChannel<Int>,
+    private val value: Int,
 ) :
     ActionListener {
 

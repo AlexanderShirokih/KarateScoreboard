@@ -4,14 +4,14 @@ plugins {
 }
 
 group = "ru.aleshi"
-version = "1.0.1"
+version = "1.0.2"
 
 repositories {
     mavenCentral()
 }
 
 application {
-    mainClassName = "scoreboards.MainKt"
+    mainClassName = "ru.aleshi.scoreboards.MainKt"
 }
 
 dependencies {

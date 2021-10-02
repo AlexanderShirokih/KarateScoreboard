@@ -11,6 +11,7 @@ interface IEventsController {
 
     fun reset()
 
-    val channel: Channel<List<String>>
+    val messagesChannel: Channel<List<String>>
 
+    val eventsChannel: Channel<Event>
 }

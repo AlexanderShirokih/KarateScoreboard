@@ -2,14 +2,18 @@ package ru.aleshi.scoreboards.view
 
 import kotlinx.coroutines.channels.Channel
 import ru.aleshi.scoreboards.data.BattleTime
-import java.awt.*
+import java.awt.Color
+import java.awt.Dimension
+import java.awt.Font
+import java.awt.GridBagLayout
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
+
 /**
- * Time table showing battle time.
+ * Timetable showing battle time.
  */
-class TimeLabel(bigSize: Boolean) : JPanel() {
+class TimeLabel(private val fullSize: Boolean) : JPanel() {
 
     companion object {
         private val timerFont =
@@ -21,6 +25,17 @@ class TimeLabel(bigSize: Boolean) : JPanel() {
     }
 
     private val timeChannel = Channel<Int>()
+
+    private val smallTimeAnimator = Timer(300) {
+        timeLabel.apply {
+            foreground = when (timeLabel.foreground) {
+                Color.white -> Color.red
+                else -> Color.white
+            }
+
+            repaint()
+        }
+    }
 
     /**
      * Returns a [Channel] that emits seconds when user hits control button for adding or subtracting time.
@@ -69,11 +84,11 @@ class TimeLabel(bigSize: Boolean) : JPanel() {
 
     private val timeLabel = JLabel("0:00").apply {
         foreground = Color.white
-        font = if (bigSize) bigTimerFont else timerFont
+        font = if (fullSize) bigTimerFont else timerFont
         isOpaque = true
         background = Color.black
         border = EmptyBorder(20, 0, 0, 0)
-        preferredSize = if (bigSize) Dimension(500, 200) else Dimension(340, 150)
+        preferredSize = if (fullSize) Dimension(500, 200) else Dimension(340, 150)
         horizontalAlignment = SwingConstants.CENTER
         verticalAlignment = SwingConstants.CENTER
     }
@@ -88,10 +103,21 @@ class TimeLabel(bigSize: Boolean) : JPanel() {
     }
 
     /**
-     * Sets current time.
+     * Sets the current time.
      */
-    fun setTime(time: BattleTime) {
+    fun setTime(time: BattleTime, isRunning: Boolean) {
         timeLabel.text = time.asString()
+
+        val shouldStart = time.isSmallTime && isRunning && !fullSize
+
+        if (shouldStart != smallTimeAnimator.isRunning) {
+            if (shouldStart) {
+                smallTimeAnimator.start()
+            } else {
+                timeLabel.foreground = Color.white
+                smallTimeAnimator.stop()
+            }
+        }
     }
 
     /**

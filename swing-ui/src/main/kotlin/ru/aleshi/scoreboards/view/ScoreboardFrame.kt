@@ -2,6 +2,9 @@ package ru.aleshi.scoreboards.view
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.filter
+import ru.aleshi.scoreboards.core.Event
 import ru.aleshi.scoreboards.core.IEventsController
 import ru.aleshi.scoreboards.data.*
 import ru.aleshi.scoreboards.data.ScoreboardState.DataState
@@ -9,6 +12,7 @@ import ru.aleshi.scoreboards.viewmodel.ScoreboardFrameViewModel
 import java.awt.Color
 import java.awt.Point
 import java.awt.event.KeyEvent
+import javax.sound.sampled.AudioSystem
 import javax.swing.*
 import javax.swing.SpringLayout.*
 
@@ -86,7 +90,7 @@ class ScoreboardFrame(
     private fun getPanel(team: Team): JPanel =
         if (isLeftTeam(team)) leftPanel else rightPanel
 
-    private val timeLabel = TimeLabel(bigSize = isFullscreen)
+    private val timeLabel = TimeLabel(fullSize = isFullscreen)
     private val settingsPanel = SettingsPanel()
     private val settingsDialog = SettingsDialog(this)
 
@@ -178,6 +182,10 @@ class ScoreboardFrame(
     fun setViewModel(viewModel: ScoreboardFrameViewModel, eventController: IEventsController) {
 
         scope.apply {
+            launch {
+                listenForTimeoutEvent(eventController)
+            }
+
             launch(Dispatchers.Main) {
                 launch {
                     viewModel.getState().collect {
@@ -243,6 +251,40 @@ class ScoreboardFrame(
         }
     }
 
+    private suspend fun listenForTimeoutEvent(eventController: IEventsController) {
+        if (isFullscreen) {
+            return
+        }
+
+        runCatching {
+            withContext(Dispatchers.IO) {
+                AudioSystem.getClip().apply {
+                    open(
+                        AudioSystem.getAudioInputStream(
+                            TimeLabel::class.java.getResourceAsStream("/sounds/air_horn.wav")?.buffered()
+                        )
+                    )
+                }
+            }
+        }.onFailure {
+            eventController.addEvent(Event.MessageEvent("Не удалось загрузить звук: $it"))
+        }.getOrNull()?.let { hornSound ->
+            coroutineScope {
+                launch {
+                    eventController.eventsChannel
+                        .consumeAsFlow()
+                        .filter { it is Event.TimeOutEvent }
+                        .collect {
+                            hornSound.apply {
+                                microsecondPosition = 0
+                                start()
+                            }
+                        }
+                }
+            }
+        }
+    }
+
     private fun updateData(data: DataState) {
         setColors(data.isRedOnLeft, data.isMirrored)
         setGroupMVisibility(data.isGroupMVisible)
@@ -250,7 +292,7 @@ class ScoreboardFrame(
 
         val battleInfo = data.battleInfo
 
-        setTime(battleInfo.getTime())
+        setTime(battleInfo.getTime(), battleInfo.isRunning)
 
         for (team in Team.values()) {
             setScore(team, battleInfo.getPoints(team))
@@ -279,8 +321,8 @@ class ScoreboardFrame(
         rightPointsGroup.setGroupMVisibility(isVisible)
     }
 
-    private fun setTime(time: BattleTime) {
-        timeLabel.setTime(time)
+    private fun setTime(time: BattleTime, isRunning: Boolean) {
+        timeLabel.setTime(time, isRunning)
     }
 
     private fun setColors(leftIsRed: Boolean, isMirrored: Boolean) {

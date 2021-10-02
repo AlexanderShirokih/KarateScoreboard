@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
  */
 
 @ExperimentalCoroutinesApi
-class ScoreboardController(eventsController: IEventsController) : IScoreboardController {
+class ScoreboardController(private val eventsController: IEventsController) : IScoreboardController {
 
     private var timerJob: Job? = null
     private val scope = CoroutineScope(Dispatchers.Default)
@@ -25,6 +25,7 @@ class ScoreboardController(eventsController: IEventsController) : IScoreboardCon
     private var mirrored = false
     private var addPointsOnWarnings = false
     private var stopTime: Long = 0L
+    private var shootTimeOut = false
 
     /**
      * `true` if M-type warning is visible
@@ -60,10 +61,12 @@ class ScoreboardController(eventsController: IEventsController) : IScoreboardCon
 
     override fun addTime(timeInSeconds: Int): Unit =
         battleInfo.addTime(timeInSeconds).apply {
+            shootTimeOut = false
             updateData()
         }
 
     override fun reset() {
+        shootTimeOut = false
         battleInfo.reset()
         battleInfo.getTime().setTime(battleTime, TimeUnit.SECONDS)
 
@@ -71,6 +74,11 @@ class ScoreboardController(eventsController: IEventsController) : IScoreboardCon
     }
 
     override fun setPaused(paused: Boolean) {
+        if (battleInfo.isRunning == paused) {
+            battleInfo.isRunning = !paused
+            updateData()
+        }
+
         if ((timerJob == null || !timerJob!!.isActive) == paused)
             return
 
@@ -89,6 +97,12 @@ class ScoreboardController(eventsController: IEventsController) : IScoreboardCon
                 val delta = current - stopTime
                 stopTime = current
                 battleInfo.getTime().decrease(delta)
+
+                if (!shootTimeOut && battleInfo.getTime().isTimeOut) {
+                    shootTimeOut = true
+                    eventsController.addEvent(Event.TimeOutEvent)
+                }
+
                 updateData()
             }
         }

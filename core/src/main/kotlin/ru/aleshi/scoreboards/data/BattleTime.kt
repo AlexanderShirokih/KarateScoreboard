@@ -11,6 +11,18 @@ class BattleTime {
     private var timeInMs: Long = 0
 
     /**
+     * `true` if remaining time is nearing the end
+     */
+    val isSmallTime: Boolean
+        get() = timeInMs < SMALL_TIME_THRESHOLD
+
+    /**
+     * `true` if remaining time is becomes zero
+     * */
+    val isTimeOut: Boolean
+        get() = timeInMs <= 0L
+
+    /**
      * Sets current battle time
      */
     fun setTime(t: Long, unit: TimeUnit) {
@@ -44,6 +56,10 @@ class BattleTime {
         val seconds = totalSeconds - minutes * 60
 
         return String.format("%d:%02d", minutes, seconds)
+    }
+
+    companion object {
+        private const val SMALL_TIME_THRESHOLD = 5000L
     }
 
 }

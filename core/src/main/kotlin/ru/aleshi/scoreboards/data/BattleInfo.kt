@@ -16,9 +16,15 @@ data class BattleInfo(private val eventController: IEventsController) {
     private val time = BattleTime()
 
     /**
-     * Resets player setting
+     * `true` if battle is currently running
+     */
+    var isRunning = false
+
+    /**
+     * Resets player settings
      */
     fun reset() {
+        isRunning = false
         leftPlayer.reset()
         rightPlayer.reset()
         eventController.reset()
@@ -95,6 +101,8 @@ data class BattleInfo(private val eventController: IEventsController) {
      */
     fun addTime(timeInSeconds: Int) {
         time.addTime(timeInSeconds, TimeUnit.SECONDS)
+
+        eventController.addEvent(Event.TimeEvent(timeInSeconds))
     }
 
     /**

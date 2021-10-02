@@ -11,7 +11,7 @@ abstract class Event {
     private val date = Date()
 
     companion object {
-        private val dateFormat = SimpleDateFormat("hh:mm:ss")
+        private val dateFormat = SimpleDateFormat("HH:mm:ss")
 
         @JvmStatic
         fun printTeam(team: Team) =
@@ -48,11 +48,7 @@ abstract class Event {
     class PointEvent(private val targetTeam: Team, private val amount: Int) : Event() {
 
         override fun toFormattedString(): String =
-            "<html>${printDate()}: <b>${sign()} ${amount.absoluteValue}</b> ${plural()} ${printTeam(targetTeam)}</html>"
-
-        private fun sign(): Char =
-            if (amount < 0) '-'
-            else '+'
+            "<html>${printDate()}: <b>${amount.signChar} ${amount.absoluteValue}</b> ${plural()} ${printTeam(targetTeam)}</html>"
 
         private fun plural(): String =
             when (amount.absoluteValue) {
@@ -60,4 +56,24 @@ abstract class Event {
                 else -> "очка"
             }
     }
+
+    class TimeEvent(private val seconds: Int) : Event() {
+
+        override fun toFormattedString(): String =
+            "<html>${printDate()}: <b>${seconds.signChar} ${seconds.absoluteValue}</b> секунд</html>"
+
+    }
+
+    open class MessageEvent(private val message: String) : Event() {
+        override fun toFormattedString(): String {
+            return "<html>${printDate()}: $message</html>"
+        }
+    }
+
+    object TimeOutEvent : MessageEvent("<b>время вышло!</b>")
+
+    internal val Int.signChar
+        get() =
+            if (this < 0) '-'
+            else '+'
 }

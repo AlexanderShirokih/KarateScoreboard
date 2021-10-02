@@ -26,13 +26,13 @@ class MessagesFrame(private val eventsController: IEventsController) : JFrame() 
         size = Dimension(285, 480)
 
         scope.launch {
-            eventsController.channel.consumeAsFlow().collect { list ->
+            eventsController.messagesChannel.consumeAsFlow().collect { list ->
                 setMessages(list)
             }
         }
     }
 
-    fun setMessages(messages: List<String>) {
+    private fun setMessages(messages: List<String>) {
         content.removeAll()
         messages
             .map { JLabel(it) }

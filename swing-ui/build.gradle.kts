@@ -2,9 +2,6 @@ plugins {
     kotlin("jvm")
 }
 
-group = "scoreboards"
-version = "1.0.1"
-
 repositories {
     mavenCentral()
 }

@@ -1,24 +1,35 @@
 package ru.aleshi.scoreboards.core
 
 import kotlinx.coroutines.channels.Channel
+import java.util.*
 
 class EventsController : IEventsController {
 
-    private val events = mutableListOf<String>()
+    private val events = Collections.synchronizedList(mutableListOf<String>())
 
-    override val channel = Channel<List<String>>()
+    override val messagesChannel = Channel<List<String>>()
+
+    override val eventsChannel = Channel<Event>()
 
     override fun addEvent(event: Event) {
-        events.add(event.toFormattedString())
+        synchronized(events) {
+            events.add(event.toFormattedString())
+            eventsChannel.trySend(event)
+        }
+
         notifyDataChanged()
     }
 
     override fun reset() {
-        events.clear()
+        synchronized(events) {
+            events.clear()
+        }
         notifyDataChanged()
     }
 
     private fun notifyDataChanged() {
-        channel.trySend(events)
+        synchronized(events) {
+            messagesChannel.trySend(events.toList())
+        }
     }
 }
