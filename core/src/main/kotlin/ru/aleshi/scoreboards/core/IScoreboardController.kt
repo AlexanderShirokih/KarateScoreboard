@@ -57,8 +57,12 @@ interface IScoreboardController {
     fun setMCatVisibility(isVisible: Boolean)
 
     /**
-     * If `true` than when warnings added opponent will give points
+     * If `true` then when warnings added opponent will give points
      */
     fun setAddPointsOnWarnings(addPointsOnWarnings: Boolean)
 
+    /**
+     * If `true` then show milliseconds additionally to the MM:ss on timetable
+     */
+    fun setShowMilliseconds(showMillis: Boolean)
 }

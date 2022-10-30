@@ -63,6 +63,7 @@ class ScoreboardFrameViewModel(
             SettingsItem.RedOnLeft -> scoreboardController.setRedOnLeft(isChecked)
             SettingsItem.MirrorTeams -> scoreboardController.setMirrorTeams(isChecked)
             SettingsItem.AddPointsOnWarnings -> scoreboardController.setAddPointsOnWarnings(isChecked)
+            SettingsItem.ShowMilliseconds -> scoreboardController.setShowMilliseconds(isChecked)
         }
     }
 }

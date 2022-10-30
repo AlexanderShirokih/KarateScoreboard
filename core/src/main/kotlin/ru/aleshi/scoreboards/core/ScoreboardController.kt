@@ -26,6 +26,7 @@ class ScoreboardController(private val eventsController: IEventsController) : IS
     private var addPointsOnWarnings = false
     private var stopTime: Long = 0L
     private var shootTimeOut = false
+    private var showMillis = true
 
     /**
      * `true` if M-type warning is visible
@@ -123,6 +124,11 @@ class ScoreboardController(private val eventsController: IEventsController) : IS
         updateData()
     }
 
+    override fun setShowMilliseconds(showMillis: Boolean) {
+        this.showMillis = showMillis
+        updateData()
+    }
+
     override fun setMCatVisibility(isVisible: Boolean) {
         isGroupMVisible = isVisible
         updateData()
@@ -136,9 +142,10 @@ class ScoreboardController(private val eventsController: IEventsController) : IS
             battleInfo = battleInfo,
             isRedOnLeft = redOnLeft,
             isMirrored = mirrored,
-            isGroupMVisible = isGroupMVisible
+            isGroupMVisible = isGroupMVisible,
+            showMillis = showMillis,
         )
-        state.offer(currentState)
+        state.trySend(currentState)
     }
 
 }

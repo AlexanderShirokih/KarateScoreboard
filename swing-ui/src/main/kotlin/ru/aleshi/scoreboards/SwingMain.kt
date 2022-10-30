@@ -7,6 +7,7 @@ import ru.aleshi.scoreboards.data.ScreenInfo
 import ru.aleshi.scoreboards.view.MessagesFrame
 import ru.aleshi.scoreboards.view.ScoreboardFrame
 import ru.aleshi.scoreboards.viewmodel.ScoreboardFrameViewModel
+import java.awt.EventQueue
 import java.awt.GraphicsEnvironment
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
@@ -16,8 +17,10 @@ import javax.swing.UIManager
 object SwingMain {
 
     fun setup() {
-        setLookAndFeel()
-        setupUI()
+        EventQueue.invokeLater {
+            setLookAndFeel()
+            setupUI()
+        }
     }
 
     @ExperimentalCoroutinesApi
@@ -47,7 +50,7 @@ object SwingMain {
 
         val mainFrame = ScoreboardFrame(false).apply {
             title = "Karate Scoreboard"
-            setSize(1050, 700)
+            setSize(1050, 760)
             setViewModel(scoreboardViewModel, eventsController)
             addWindowStateListener(object : WindowAdapter() {
                 override fun windowClosing(event: WindowEvent?) = clearSubscriptions()

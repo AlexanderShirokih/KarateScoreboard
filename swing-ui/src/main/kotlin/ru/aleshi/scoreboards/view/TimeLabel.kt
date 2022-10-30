@@ -2,12 +2,16 @@ package ru.aleshi.scoreboards.view
 
 import kotlinx.coroutines.channels.Channel
 import ru.aleshi.scoreboards.data.BattleTime
+import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
+import java.awt.FlowLayout
 import java.awt.Font
+import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import javax.swing.*
 import javax.swing.border.EmptyBorder
+import javax.swing.border.LineBorder
 
 
 /**
@@ -21,20 +25,27 @@ class TimeLabel(private val fullSize: Boolean) : JPanel() {
                 Font.TRUETYPE_FONT,
                 ScoreboardFrame::class.java.getResourceAsStream("/font/DigitalFont-Regular.otf")
             ).deriveFont(160f)
+
         private val bigTimerFont = timerFont.deriveFont(240f)
+
+        private val millisTimeFont = timerFont.deriveFont(30f)
+        private val millisBigTimeFont = timerFont.deriveFont(45f)
     }
 
     private val timeChannel = Channel<Int>()
 
     private val smallTimeAnimator = Timer(300) {
-        timeLabel.apply {
-            foreground = when (timeLabel.foreground) {
+        fun JLabel.flipColor() {
+            foreground = when (foreground) {
                 Color.white -> Color.red
                 else -> Color.white
             }
 
             repaint()
         }
+
+        timeLabel.flipColor()
+        millisTimeLabel.flipColor()
     }
 
     /**
@@ -87,10 +98,40 @@ class TimeLabel(private val fullSize: Boolean) : JPanel() {
         font = if (fullSize) bigTimerFont else timerFont
         isOpaque = true
         background = Color.black
-        border = EmptyBorder(20, 0, 0, 0)
-        preferredSize = if (fullSize) Dimension(500, 200) else Dimension(340, 150)
         horizontalAlignment = SwingConstants.CENTER
         verticalAlignment = SwingConstants.CENTER
+    }
+
+    private val millisTimeLabel = JLabel("000").apply {
+        foreground = Color.white
+        isOpaque = true
+        background = Color.black
+        font = if (fullSize) millisBigTimeFont else millisTimeFont
+        horizontalAlignment = SwingConstants.CENTER
+        verticalAlignment = SwingConstants.CENTER
+    }
+
+    private val timeGroup = JPanel().apply {
+        preferredSize = if (fullSize) Dimension(500, 290) else Dimension(340, 180)
+        isOpaque = false
+        layout = GridBagLayout()
+        border = if (fullSize) EmptyBorder(0, 0, 0, 0) else EmptyBorder(20, 0, 0, 0)
+
+        add(
+            timeLabel,
+            GridBagConstraints().apply {
+                gridy = 0
+                anchor = GridBagConstraints.CENTER
+            }
+        )
+
+        add(
+            millisTimeLabel,
+            GridBagConstraints().apply {
+                gridy = 1
+                anchor = GridBagConstraints.PAGE_END
+            }
+        )
     }
 
     init {
@@ -98,15 +139,24 @@ class TimeLabel(private val fullSize: Boolean) : JPanel() {
         layout = GridBagLayout()
 
         add(subGroup)
-        add(timeLabel)
+        add(timeGroup)
         add(addGroup)
     }
 
     /**
      * Sets the current time.
      */
-    fun setTime(time: BattleTime, isRunning: Boolean) {
-        timeLabel.text = time.asString()
+    fun setTime(
+        time: BattleTime,
+        showMillis: Boolean,
+        isRunning: Boolean
+    ) {
+        if (showMillis != millisTimeLabel.isVisible) {
+            millisTimeLabel.isVisible = showMillis
+        }
+
+        timeLabel.text = time.seconds()
+        millisTimeLabel.text = time.remainingMillis()
 
         val shouldStart = time.isSmallTime && isRunning && !fullSize
 
@@ -115,6 +165,7 @@ class TimeLabel(private val fullSize: Boolean) : JPanel() {
                 smallTimeAnimator.start()
             } else {
                 timeLabel.foreground = Color.white
+                millisTimeLabel.foreground = Color.white
                 smallTimeAnimator.stop()
             }
         }

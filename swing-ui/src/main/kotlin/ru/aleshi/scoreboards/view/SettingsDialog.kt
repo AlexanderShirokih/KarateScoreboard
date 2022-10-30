@@ -51,6 +51,14 @@ class SettingsDialog(frame: ScoreboardFrame) : JDialog(frame) {
             }
         }
 
+    private val cbShowMillis = JCheckBox(Resources.getString("settings.show_millis"), true)
+        .apply {
+            addItemListener { itemEvent: ItemEvent ->
+                val isSelected = itemEvent.stateChange == ItemEvent.SELECTED
+                mTypeCheckedChannel.trySend(SettingsItem.ShowMilliseconds to isSelected)
+            }
+        }
+
     init {
         title = Resources.getString("settings.title")
         add(JPanel().apply {
@@ -63,6 +71,8 @@ class SettingsDialog(frame: ScoreboardFrame) : JDialog(frame) {
             add(cbMirrorTeams)
             add(Box.createVerticalStrut(16))
             add(cbAddPointsOnWarnings)
+            add(Box.createVerticalStrut(16))
+            add(cbShowMillis)
             add(Box.createVerticalStrut(16))
             add(JLabel(Resources.getString("settings.keybindings_description")))
         })

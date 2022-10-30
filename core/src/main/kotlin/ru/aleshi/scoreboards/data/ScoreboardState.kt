@@ -17,6 +17,7 @@ sealed class ScoreboardState {
         val battleInfo: BattleInfo,
         val isGroupMVisible: Boolean,
         val isRedOnLeft: Boolean = true,
-        val isMirrored: Boolean = false
+        val isMirrored: Boolean = false,
+        val showMillis: Boolean = true,
     ) : ScoreboardState()
 }

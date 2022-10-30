@@ -7,5 +7,6 @@ enum class SettingsItem {
     UseThirdWarningLine,
     RedOnLeft,
     AddPointsOnWarnings,
-    MirrorTeams
+    MirrorTeams,
+    ShowMilliseconds,
 }

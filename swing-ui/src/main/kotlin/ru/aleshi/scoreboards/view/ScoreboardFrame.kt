@@ -196,6 +196,7 @@ class ScoreboardFrame(
                                     isGroupMVisible = false
                                 )
                             )
+
                             is DataState -> updateData(it)
                         }
                     }
@@ -292,7 +293,11 @@ class ScoreboardFrame(
 
         val battleInfo = data.battleInfo
 
-        setTime(battleInfo.getTime(), battleInfo.isRunning)
+        setTime(
+            time = battleInfo.getTime(),
+            showMillis = data.showMillis,
+            isRunning = battleInfo.isRunning
+        )
 
         for (team in Team.values()) {
             setScore(team, battleInfo.getPoints(team))
@@ -321,8 +326,16 @@ class ScoreboardFrame(
         rightPointsGroup.setGroupMVisibility(isVisible)
     }
 
-    private fun setTime(time: BattleTime, isRunning: Boolean) {
-        timeLabel.setTime(time, isRunning)
+    private fun setTime(
+        time: BattleTime,
+        showMillis: Boolean,
+        isRunning: Boolean
+    ) {
+        timeLabel.setTime(
+            time = time,
+            showMillis = showMillis,
+            isRunning = isRunning,
+        )
     }
 
     private fun setColors(leftIsRed: Boolean, isMirrored: Boolean) {

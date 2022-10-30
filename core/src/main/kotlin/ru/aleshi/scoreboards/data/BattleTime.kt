@@ -49,13 +49,21 @@ class BattleTime {
     /**
      * Returns formatted string representation of current battle time
      */
-    fun asString(): String {
+    fun seconds(): String {
         val totalSeconds = TimeUnit.MILLISECONDS.toSeconds(timeInMs)
 
         val minutes = totalSeconds / 60
         val seconds = totalSeconds - minutes * 60
 
         return String.format("%d:%02d", minutes, seconds)
+    }
+
+    /**
+     * Returns formatted string representation of the currently remaining battle time milliseconds
+     */
+    fun remainingMillis(): String {
+        val remainingMillis = timeInMs % 1000L
+        return String.format("%03d", remainingMillis)
     }
 
     companion object {
