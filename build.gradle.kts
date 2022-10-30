@@ -20,7 +20,7 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":swing-ui"))
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1-native-mt")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
     testImplementation("junit", "junit", "4.12")
 }
